@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Prezentacja - Sebastian Marczyk</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Poppins', sans-serif; }
+        
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            background: #000;
+        }
+        
+        #main-container { 
+            position: relative;
+            z-index: 1;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .slide-panel {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-radius: 70px;
+            padding: 60px;
+            width: 80%;
+            max-width: 1200px;
+            text-align: center;
+            color: #fff;
+            pointer-events: auto;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            will-change: transform; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            max-height: 80vh; 
+            overflow-y: auto;
+        }
+
+        .slide-panel::-webkit-scrollbar { width: 10px; }
+        .slide-panel::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .slide-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+
+        .icon-box { font-size: 150px; margin-bottom: 20px; display: inline-block; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-20px); } 100% { transform: translateY(0px); } }
+
+        h1 { font-size: 3rem; margin-bottom: 15px; text-transform: uppercase; }
+        h2 { font-size: 1.8rem; color: #ffeb3b; margin-bottom: 20px; }
+        p { font-size: 1.5rem; line-height: 1.5; text-align: justify; }
+    </style>
+</head>
+<body>
+
+    <canvas id="bgCanvas"></canvas>
+
+    <div id="main-container">
+        <div class="slide-panel" id="content"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const drops = [];
+        const count = 120;
+
+        function createDrop() {
+            return {
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 4 + 2,
+                speed: Math.random() * 0.4 + 0.1, 
+                hue: Math.random() * 360
+            };
+        }
+
+        for (let i = 0; i < count; i++) {
+            drops.push(createDrop());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drops.forEach(d => {
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2);
+                ctx.fillStyle = `hsl(${d.hue}, 80%, 60%)`;
+                ctx.fill();
+                d.y += d.speed;
+                d.hue = (d.hue + 0.5) % 360;
+                if (d.y > canvas.height) {
+                    d.y = -d.size;
+                    d.x = Math.random() * canvas.width;
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        const slides = [
+            {h1: "Sprawozdanie z Udzielania Pomocy Psychologiczno-Pedagogicznej", h2: "Szkoła Podstawowa im. Wandy Rutkiewicz w Janowicach Wielkich – II semestr 2025/2026", p: "Niniejszy dokument podsumowuje intensywne działania pomocowe w II semestrze 2025/2026. Zintegrowany zespół specjalistów, wychowawców i dyrekcji przeprowadził szereg interwencji, które miały na celu nie tylko wsparcie doraźne, ale także budowanie długofalowej odporności psychicznej naszych uczniów. Działania obejmowały zarówno wsparcie indywidualne, jak i systemową profilaktykę klasową.", icon: "🏫"},
+            {h1: "Wspólny Model Działań", h2: "Interdyscyplinarna współpraca", p: "Wdrożyliśmy nowy, bardziej efektywny model pracy oparty na przepływie informacji. Dyrekcja, wychowawcy i specjaliści tworzą sieć wsparcia, która pozwala na błyskawiczne reagowanie na sygnały o trudnościach. Naszym celem jest holistyczne podejście do ucznia, w którym każdy dorosły w szkole wie, jak odpowiednio zareagować, by zapewnić dziecku bezpieczeństwo i poczucie bycia wysłuchanym.", icon: "🤝"},
+            {h1: "Wielospecjalistyczna Diagnoza", h2: "Analiza potrzeb i barier", p: "W klasach I–VIII prowadzimy ciągłą, systematyczną diagnozę. Analizujemy środowisko ucznia, jego predyspozycje oraz przyczyny niepowodzeń edukacyjnych. Dzięki temu jesteśmy w stanie wyprzedzać trudności i proponować rozwiązania, zanim staną się one problemami wymagającymi interwencji zewnętrznych.", icon: "🔍"},
+            {h1: "Wskaźniki Ilościowe Pomocy", h2: "Skala naszych działań", p: "W ostatnim okresie przeprowadziliśmy pogłębione rozmowy wspierające z 34 uczniami wymagającymi szczególnej opieki emocjonalnej. Nasza czujność diagnostyczna pozwoliła również skierować 18 uczniów do Poradni Psychologiczno-Pedagogicznej, co umożliwiło wdrożenie precyzyjnych form pomocy dostosowanych do ich unikalnych potrzeb rozwojowych.", icon: "📊"},
+            {h1: "Cyfryzacja i Planowanie", h2: "Efektywność w Librusie", p: "Systematyczne ewidencjonowanie zaleceń i dostosowań w dzienniku elektronicznym Librus to standard naszej pracy. Umożliwia to każdemu nauczycielowi wgląd w potrzeby ucznia. Już teraz przygotowujemy grunt pod kolejny rok szkolny 2026/2027, budując bazy uczniów wymagających wsparcia, aby zapewnić płynność opieki pedagogicznej.", icon: "💻"},
+            
+            // NOWY SLAJD DLA KLAS 1 i 2
+            {h1: "Tydzień Bezpieczeństwa MEN", h2: "Klasy I, II i III", p: "W ramach ogólnopolskiego Tygodnia Bezpieczeństwa zorganizowanego przez MEN, najmłodsi uczniowie wzięli udział w unikalnych warsztatach praktycznych. Klasy I, II i III uczyły się zasad bezpiecznego zachowania nad wodą pod okiem instruktorów ze szkoły pływania 'Just swim', poznając krok po kroku kluczowe algorytmy bezpieczeństwa. Dodatkowo dzieci uczestniczyły w warsztatach pierwszej pomocy, gdzie ćwiczyły resuscytację krążeniowo-oddechową (RKO) na swoich ulubionych misiach. Użycie maskotek pozwoliło drastycznie zredukować stres, obniżyć lęk i zbudować w dzieciach naturalną gotowość do działania w sytuacjach kryzysowych.", icon: "🧸"},
+            
+            {h1: "Profilaktyka: Program 'Cukierki'", h2: "Klasy III a i III b", p: "Program 'Cukierki' uczy dzieci, że świat bywa fascynujący, ale też ryzykowny. Poprzez zabawę kształtujemy umiejętność mówienia 'nie', stawiania granic oraz rozpoznawania osób, które mogą stanowić zagrożenie. To kluczowe dla budowania fundamentów bezpieczeństwa.", icon: "🍬"},
+            {h1: "Relacje, Szacunek i Tolerancja", h2: "Klasa III b", p: "Warsztaty te miały na celu naukę empatii i zarządzania emocjami. Wprowadziliśmy ćwiczenia, które pozwalają dzieciom na nazwanie swojego stresu i rozładowanie go w sposób akceptowalny społecznie. Uczymy, że różnorodność w klasie jest wartością, a szacunek do kolegi to podstawa zdrowych relacji.", icon: "🌈"},
+            {h1: "Integracja i Adaptacja", h2: "Klasa IV a", p: "Zmiana składu klasy to zawsze wyzwanie. Warsztaty adaptacyjne miały na celu 'zszycie' grupy na nowo. Skupiliśmy się na wzajemnym poznaniu, znalezieniu punktów wspólnych i stworzeniu atmosfery, w której każdy nowy uczeń czuje się częścią zespołu, a dotychczasowi uczniowie otwierają się na nowe relacje.", icon: "🧩"},
+            {h1: "Rozwój Emocjonalny", h2: "Pewność siebie (Kl. IV a / V a)", p: "Praca nad samooceną to proces długofalowy. W trakcie tych warsztatów uczniowie odkrywali swoje mocne strony, analizowali sukcesy i uczyli się, że porażka jest tylko lekcją. Celem było wzmocnienie przekonania o własnej sprawczości – aby uczeń wierzył, że ma wpływ na swoje życie szkolne.", icon: "💪"},
+            {h1: "Radzenie sobie ze Stresem", h2: "Klasa IV b", p: "Stres jest naturalnym elementem szkoły, ale nie może paraliżować. Wyposażyliśmy uczniów w zestaw narzędzi: od technik oddechowych po proste metody poznawcze. Dzięki nim dzieci potrafią same obniżyć poziom napięcia przed klasówką czy publicznym wystąpieniem, co bezpośrednio przekłada się na lepsze wyniki w nauce.", icon: "🧘"},
+            {h1: "Kształtowanie Empatii", h2: "Klasa IV b", p: "Warsztat 'Zrozum, zanim ocenisz' to nasza odpowiedź na powierzchowne osądy. Uczniowie poprzez symulacje uczyli się wchodzić w buty drugiej osoby. To buduje odporność na agresję i stereotypy, promując kulturę zrozumienia, w której nikt nie jest oceniany przez pryzmat jednej sytuacji.", icon: "🧠"},
+            {h1: "Samoregulacja", h2: "Klasy V a i V b", p: "Emocje to energia. Uczymy dzieci, że odczuwanie złości czy smutku jest w porządku, ale to, co z tą energią zrobimy, ma znaczenie. 'Instrukcja obsługi emocji' to praktyczne warsztatów, które uczą wyhamowywać impulsy, zanim przerodzą się w konflikt.", icon: "🌪️"},
+            {h1: "Granice i Komunikacja", h2: "Klasa V b", p: "Wiek dojrzewania to czas ustalania granic. Warsztaty koncentrowały się na asertywności – jak mówić 'nie', jak nie ulegać presji grupy i jak szanować granice innych. To buduje fundament zdrowych, bezpiecznych relacji, chroniąc młodzież przed manipulacją.", icon: "🚧"},
+            {h1: "Przeciwdziałanie Wykluczeniu", h2: "Klasa V a", p: "Wykluczenie to ból, który zostaje na lata. Analizując mechanizmy grupowe, uczymy uczniów, jak zauważać osoby, które czują się odizolowane. Promujemy aktywne włączanie rówieśników do wspólnych działań, czyniąc klasę bardziej demokratyczną i otwartą.", icon: "🚫"},
+            {h1: "Kultura Słowa: 'Słowa mają moc'", h2: "Klasy V a, V b, VI b", p: "Słowa ranią głębiej niż czyny. Cykl warsztatów poświęcony był odpowiedzialności za to, co mówimy. Uwieńczeniem pracy było stworzenie kontraktów klasowych, które jasno określają, jaki język jest akceptowalny, a jaki jest wyrazem braku szacunku i nie będzie tolerowany.", icon: "💬"},
+            {h1: "Motywacja i Potencjał", h2: "Klasa V b", p: "Warsztaty odkrywania talentów. Często uczniowie nie widzą w sobie potencjału, dopóki ktoś im go nie wskaże. Pomagamy uczniom znaleźć ich pasje i przekuć je w motywację do nauki przedmiotów, które przychodzą im trudniej. 'Chce mi się chcieć' to postawa, którą promujemy.", icon: "🌟"},
+            {h1: "Profilaktyka Antyhejtowa", h2: "Klasa V a", p: "Internet to nie anonimowa przestrzeń. Uczymy odpowiedzialności za każdy wpis. Profilaktyka antyhejtowa to nie tylko mówienie 'nie', to edukacja o tym, jak hejt niszczy ludzi i jak reagować, gdy stajemy się jego ofiarą lub świadkiem.", icon: "🛡️"},
+            {h1: "Bezpieczeństwo Cyfrowe", h2: "Klasy IV–VIII", p: "W dobie cyfryzacji bezpieczeństwo online jest kluczowe. Prelekcje w ramach Tygodnia Bezpieczeństwa (MEN) dotyczyły ochrony wizerunku, zagrożeń w sieci i higieny cyfrowej. Edukujemy, że to, co wstawimy do sieci, zostaje tam na zawsze.", icon: "🌐"},
+            {h1: "Relacje Rówieśnicze", h2: "Klasa 6a", p: "W tej klasie skupiliśmy się na jakości więzi. Współpraca, wspólne cele i rozwiązywanie problemów w sposób pokojowy – to główne tematy. Celem jest stworzenie silnej grupy, która będzie wsparciem dla każdego z uczniów w trudnym wieku dojrzewania.", icon: "👭"},
+            {h1: "Zdrowie Psychiczne", h2: "Profilaktyka Depresji (Kl. VI b)", p: "Depresja u dzieci to temat, którego nie można bagatelizować. Przekazujemy rzetelną wiedzę – co jest smutkiem, a co chorobą. Uczymy, jak wspierać kolegę w krycrisis i najważniejsze: gdzie szukać dorosłego, który pomoże.", icon: "❤️‍🩹"},
+            {h1: "Zdrowy Styl Życia", h2: "Program 'Trzymaj Formę' (Kl. VII)", p: "Zdrowie psychiczne nierozerwalnie łączy się z fizycznym. Współpraca z Sanepidem pozwoliła uczniom zrozumieć, co jedzą. Warsztaty z czytania etykiet to pierwszy krok do budowania świadomej dbałości o swoje ciało, co bezpośrednio wpływa na samopoczucie.", icon: "🍎"},
+            {h1: "Trening Uważności", h2: "Klasa VII a", p: "W pędzącym świecie uczniowie potrzebują 'stop-klatki'. Trening uważności (mindfulness) pozwala na redukcję napięcia, lepszą koncentrację i spokojniejsze podejście do problemów. To umiejętność, która przyda się im nie tylko w szkole, ale w całym dorosłym życiu.", icon: "🌿"},
+            {h1: "Wsparcie Przedegzaminacyjne", h2: "Klasy VIII", p: "Egzamin ósmoklasisty to stresor numer jeden. Uczymy zarządzania lękiem, technik relaksacyjnych oraz doradztwa zawodowego. Pomagamy uczniom zrozumieć, że egzamin to tylko etap, a nie koniec świata, co pozwala podejść do niego ze spokojniejszą głową.", icon: "🎓"},
+            {h1: "Dzień Świadomości Autyzmu", h2: "Klasy IV–VIII", p: "Neuroróżnorodność jest faktem. Prelekcja 'Spektrum możliwości' miała na celu pokazanie autyzmu nie jako wady, ale jako innego sposobu funkcjonowania mózgu. Uczymy otwartości, która jest niezbędna do budowania społeczeństwa bez wykluczenia.", icon: "🧩"},
+            {h1: "Inicjatywy Środowiskowe", h2: "Janowice Wielkie", p: "Akcje lokalne, jak Marsz Świadomości Autyzmu czy 'Skarpetki nie do pary', to nasze narzędzia budowania wspólnoty. Wychodzimy ze szkoły w przestrzeń publiczną, by pokazać, że jako szkoła bierzemy odpowiedzialność za edukację całego środowiska, nie tylko uczniów.", icon: "👣"},
+            {h1: "Wsparcie Specjalistyczne", h2: "Formy pomocy psychologiczno-pedagogicznej", p: "Zajęcia dydaktyczno-wyrównawcze (z języka polskiego, języka angielskiego oraz matematyki), logopedia, zajęcia korekcyjno-kompensacyjne oraz zajęcia rozwijające kompetencje emocjonalno-społeczne (TUS) – to zestaw narzędzi, którymi systemowo wyrównujemy szanse edukacyjne i wspieramy wszechstronny rozwój uczniów.", icon: "🛠️"},
+            {h1: "Współpraca z Rodziną i GOPS", h2: "Holistyczne wsparcie", p: "Szkoła nie działa w próżni. Współpraca z rodzicami, kuratorami i ośrodkami pomocy społecznej jest kluczowa. Monitorujemy sytuację bytową i frekwencję, reagując kompleksowo na każde wyzwanie, z jakim mierzy się rodzina naszego ucznia.", icon: "📞"},
+            {h1: "Podsumowanie i Plany", h2: "Dokumentacja i Rekomendacje", p: "Opracowaliśmy komplet dokumentacji IPET i WOPFU. Nasze rekomendacje na kolejny rok to dalszy rozwój kompetencji cyfrowych oraz pogłębienie działań z zakresu profilaktyki zdrowia psychicznego.", icon: "📋"},
+            {h1: "Prezentację przygotował", h2: "Sebastian Marczyk", p: "", icon: "✨"}
+        ];
+
+        let current = 0;
+        const contentDiv = document.getElementById('content');
+
+        function showSlide() {
+            const s = slides[current];
+            contentDiv.innerHTML = `<div class="icon-box">${s.icon}</div><h1>${s.h1}</h1><h2>${s.h2}</h2><p>${s.p}</p>`;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowRight' && current < slides.length - 1) { current++; showSlide(); }
+            if(e.key === 'ArrowLeft' && current > 0) { current--; showSlide(); }
+        });
+        showSlide();
+    </script>
+</body>
+</html>
